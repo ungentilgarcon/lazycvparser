@@ -1,33 +1,32 @@
 # GRÉGORY BAHDE
 
-| | **GRÉGORY BAHDE** | |
-| --- | :---: | --- |
-| 30 rue de l’Annonciade<br>69001 Lyon deux enfants<br>permis B, véhiculé |  | Email : Gregory.Bahde@laposte.net<br>Téléphone : 0619157341<br>Âge : 37ans |
+|  |  |
+| --- | --- |
+| 30 rue de l’Annonciade<br>69001 Lyon deux enfants<br>permis B, véhiculé | Email : Gregory.Bahde@laposte.net<br>Téléphone : 0619157341<br>Âge : 37ans |
 
 
 ## Diplômes, formations et postes
 
-En cours Ecriture de ma thèse sur l’impact écologique des tournées des artistes (projet Bandstour, bandstour.topogram.io).
 | Période | Détails |
 | --- | --- |
-| Décembre 2017 | Participation au colloque d’histoire du numérique (Davos), en collaboration avec Clément Renaud, avec une présentation intitulée : « From Davos to Beijing, the trajectory of the concept of digital sovereignty » Organisation du Fabulous Contribution Camp pour le compte de Framasoft et la |
-| Novembre 2017 | quadrature du net à Grrrndzero, visant à repenser les modalités de la contribution au logiciels libre. Suivi de nombreux séminaires et interventions sur le numérique, internet, la |
-| 2017 | géographie, l'épistémologie, le data-mining et la carto-visu. Enseignant du M2 Sibist de l’Enssib, assurant les cours d’édition numérique |
-| Octobre 2016 à Février 2017 | (langages de l’édition numérique/ environnement linux/ cartographie / gestion de projet / contexte économique et social de l’édition numérique) Suivi des conférences à DH 2016 (Krakow).Présentation de Topogram à DH. |
-| 11 au 16 Juillet 2016 | Suivi de la formation à Gargantext (un outil d’analyse textuelle) animée par David |
-| 9 Juin 2016 | Chavalarias à l’Institut des systèmes complexes (Paris) Suivi de nombreux séminaires et interventions sur le numérique, internet, la géographie et l'épistémologie. |
-| 2016 | Research school ER02 of machine learning, organisé par l’IXXI et l’INRIA à l’ENS Monod : « Data Mining : Statistical Modeling and Learning from the Data », par |
-| 11 au 15 janvier 2016 | Prof.Ciro Caruto, Dr.Laetitia Gauvin et Dr.Andre Panisson.(36h) Séminaires sur l'Histoire de la Cartographie de Henri Desbois à l'ENSSIB. |
+| En cours | Ecriture de ma thèse sur l’impact écologique des tournées des artistes (projet Bandstour, bandstour.topogram.io). |
+| Décembre 2017 | Participation au colloque d’histoire du numérique (Davos), en collaboration avec Clément Renaud, avec une présentation intitulée : « From Davos to Beijing, the trajectory of the concept of digital sovereignty » |
+| Novembre 2017 | Organisation du Fabulous Contribution Camp pour le compte de Framasoft et la quadrature du net à Grrrndzero, visant à repenser les modalités de la contribution au logiciels libre. |
+| 2017 | Suivi de nombreux séminaires et interventions sur le numérique, internet, la géographie, l'épistémologie, le data-mining et la carto-visu. |
+| Octobre 2016 à Février 2017 | Enseignant du M2 Sibist de l’Enssib, assurant les cours d’édition numérique (langages de l’édition numérique/ environnement linux/ cartographie / gestion de projet / contexte économique et social de l’édition numérique) Suivi des conférences à DH 2016 (Krakow).Présentation de Topogram à DH. |
+| 9 Juin 2016 | Suivi de la formation à Gargantext (un outil d’analyse textuelle) animée par David Chavalarias à l’Institut des systèmes complexes (Paris) Suivi de nombreux séminaires et interventions sur le numérique, internet, la géographie et l'épistémologie. |
+| 2016 | Research school ER02 of machine learning, organisé par l’IXXI et l’INRIA à l’ENS |
+| 11 au 15 janvier 2016 | Monod : « Data Mining : Statistical Modeling and Learning from the Data », par Prof.Ciro Caruto, Dr.Laetitia Gauvin et Dr.Andre Panisson.(36h) Séminaires sur l'Histoire de la Cartographie de Henri Desbois à l'ENSSIB. |
 | courant 2015-2016 | Suivi des séminaires d'Histoire des mathématiques et des sciences de Jean Dhombres à l'ENSSIB. Prototypage et production d’une solution d’acquisition et de traitement de données issues de capteurs Lidar/GPS rtk...pour les drones aéroportés de cartographie des cours d’eaux de la vallée du Rhône (ENS/CNRS/Lyon 2) A l'issue de ma formation en anglais à l'UJM et du suivi des tests Cambridge English, j'ai obtenu un diplôme de Cambridge en anglais, attestant de mon niveau (C2, permettant notamment d'enseigner à l'étranger). |
 | Juillet 2015 | Participation aux rencontres IXXI / Géographie à l'ENS. |
 | Juin 2015 | Suivi des conférences de Gérard Berry sur l'informatique. |
-| Mai 2015 | Suivi de formations à l'outil statistique R et à ses interactions avec le SIG Qgis à l'ENS. Suivi des cours de Grigory Panassenko sur les lois de la thermodynamique et le |
-| Février à Mai 2015 | passage d’échelle micro au macro (UJM/CNRS). Suivi du séminaire avec Geert Lovink de l'Institute of Cultural Networks -NL- |
-| Avril 2015 | (Enssib). Doctorant en géographie sous la co-direction d’Eric Guichard (Enssib) et de |
-| depuis Janvier 2015 | Thierry Joliveau (UJM), avec pour sujet : « Contribution à une Géographie du Numérique ». Responsable du dépôt, de la diffusion, de la formation des doctorants et du |
-| Sept 2012 à Août 2013 | changement de chaîne de traitement documentaire (xml vers pdf/1A) au service commun des thèses de l’Université de Lyon.(temps plein). Responsable du service d’acquisition en documentation imprimée du Service Commun de la Documentation et traitement du questionnaire LibQUAL – |
-| Oct 2011 à Août 2012 | Université Lyon 3.(temps plein, dont intérim sur le poste de responsable de la politique documentaire, Encadrement d’une équipe de 25 biliothécaires et magasiniers). Responsable de bibliothèque de Lycée Français, et Professeur de Physique Chimie niveau lycée –terminales et spé PC- (temps plein, Lycée Français Victor |
-| Sept 2010 à Juil 2011 | Hugo de Managua / AEFE, Nicaragua). Professeur d’électricité au CFA BTP de St Etienne (temps plein). |
+| Mai 2015 | Suivi de formations à l'outil statistique R et à ses interactions avec le SIG Qgis à l'ENS. |
+| Février à Mai 2015 | Suivi des cours de Grigory Panassenko sur les lois de la thermodynamique et le passage d’échelle micro au macro (UJM/CNRS). |
+| Avril 2015 | Suivi du séminaire avec Geert Lovink de l'Institute of Cultural Networks -NL- (Enssib). |
+| depuis Janvier 2015 | Doctorant en géographie sous la co-direction d’Eric Guichard (Enssib) et de Thierry Joliveau (UJM), avec pour sujet : « Contribution à une Géographie du Numérique ». |
+| Sept 2012 à Août 2013 | Responsable du dépôt, de la diffusion, de la formation des doctorants et du changement de chaîne de traitement documentaire (xml vers pdf/1A) au service commun des thèses de l’Université de Lyon.(temps plein). Responsable du service d’acquisition en documentation imprimée du Service |
+| Oct 2011 à Août 2012 | Commun de la Documentation et traitement du questionnaire LibQUAL – Université Lyon 3.(temps plein, dont intérim sur le poste de responsable de la politique documentaire, Encadrement d’une équipe de 25 biliothécaires et magasiniers). Responsable de bibliothèque de Lycée Français, et Professeur de Physique |
+| Sept 2010 à Juil 2011 | Chimie niveau lycée –terminales et spé PC- (temps plein, Lycée Français Victor Hugo de Managua / AEFE, Nicaragua). Professeur d’électricité au CFA BTP de St Etienne (temps plein). |
 | 2010 | Cours de Français - cours particuliers et à l’AEFE- (Tuxtla Gutierrez, Mexique). |
 | 2009 | Chargé de projet LibQUAL, RFID, indicateurs au sein du Service Commun de la Documentation de l’Université Lyon1.(temps plein). |
 | Fév 2008 à Déc 2008 | En stage au Centre d’Information des Nations Unies (UNIC), développement d’une bibliothèque numérique (Prague, République Tchèque). |
@@ -48,16 +47,16 @@ En cours Ecriture de ma thèse sur l’impact écologique des tournées des arti
 
 | Période | Détails |
 | --- | --- |
-| 2017 | Topogram, outil web de cartographie et de visualisation spatio-temporelle des réseaux (Mappemonde) |
-| 2016 | Topogram, a web visualisation toolkit for dynamic or static, spatial or aspatial large datasets.(à paraître dans GIS science) |
+| 2017 | Topogram, outil web de cartographie et de visualisation spatio-temporelle des |
+| 2016 | réseaux (Mappemonde) Topogram, a web visualisation toolkit for dynamic or static, spatial or aspatial large datasets.(à paraître dans GIS science) |
 
 
 ## Principales responsabilités scientifiques
 
 | Période | Détails |
 | --- | --- |
-| 2016-2018 | Membre du bureau de l’association IMUalpha et co-responsable des ateliers expérimentaux. En charge du développement d’une acquisition de données multi-capteurs pour vecteurs aéroportées (LIDAR, GPS rtk, caméra hyperspectrale…) pour l’IRG et ISIG (Lyon) (publications). Participation aux réunions du bureau de la coopérative de recherche IMU alpha, |
-| 2015-2016 | émanation du Labex IMU (Intelligence des Mondes Urbains) organisant des ateliers expérimentaux et axée sur les questions de transversalité et de transdisciplinarité. |
+| 2016-2018 | Membre du bureau de l’association IMUalpha et co-responsable des ateliers expérimentaux. En charge du développement d’une acquisition de données multi-capteurs pour vecteurs aéroportées (LIDAR, GPS rtk, caméra hyperspectrale…) pour l’IRG et ISIG (Lyon) (publications). |
+| 2015-2016 | Participation aux réunions du bureau de la coopérative de recherche IMU alpha, émanation du Labex IMU (Intelligence des Mondes Urbains) organisant des ateliers expérimentaux et axée sur les questions de transversalité et de transdisciplinarité. |
 
 
 ## Rayonnement et responsabilités collectives scientifiques

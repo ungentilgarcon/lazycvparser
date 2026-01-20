@@ -101,7 +101,8 @@ def detect_sections(lines):
     # Heuristiques de date
     months = r'(?:Janvier|Février|Mars|Avril|Mai|Juin|Juillet|Août|Septembre|Octobre|Novembre|Décembre|Janv|Fév|Fev|Mar|Avr|Juil|Aou|Août|Sept|Oct|Nov|Déc|Dec)'
     date_re_line = re.compile(
-        rf'Depuis\s+\d{{4}}'
+        rf'En\s+cours'
+        rf'|Depuis\s+\d{{4}}'
         rf'|Depuis\s+{months}\s+\d{{4}}'
         rf'|depuis\s+{months}\s+\d{{4}}'
         rf'|courant\s+(19|20)\d{{2}}\s*(?:-|–|—|à)\s*(19|20)\d{{2}}'
@@ -183,9 +184,9 @@ def detect_sections(lines):
     contact_text = "<br>".join(contact_lines)
 
     if address_text or contact_text:
-        md_lines.append("| | **" + name + "** | |")
-        md_lines.append("| --- | :---: | --- |")
-        md_lines.append(f"| {address_text} |  | {contact_text} |")
+        md_lines.append("|  |  |")
+        md_lines.append("| --- | --- |")
+        md_lines.append(f"| {address_text} | {contact_text} |")
         md_lines.append('')
 
     current_date = None
@@ -194,6 +195,18 @@ def detect_sections(lines):
     def format_entry_text(text):
         text = re.sub(r'\s+', ' ', text).strip()
         return text
+
+    def is_dangling_line(text):
+        text = text.strip()
+        if not text:
+            return False
+        # Conjonctions ou prépositions qui indiquent une continuation
+        if re.search(r'(?:\b(et|ou|la|le|les|du|de|des|au|aux|à)\b)$', text, re.IGNORECASE):
+            return True
+        # Pas de ponctuation terminale
+        if not re.search(r'[\.!?;:]\s*$', text):
+            return True
+        return False
 
     def flush_entry():
         nonlocal current_date, current_entry_lines
@@ -245,6 +258,9 @@ def detect_sections(lines):
         # Date / période -> sous-titre
         date_match = date_re_line.match(text)
         if date_match:
+            carryover = None
+            if current_entry_lines and is_dangling_line(current_entry_lines[-1]):
+                carryover = current_entry_lines.pop()
             flush_entry()
             flush_paragraph()
             date_text = date_match.group(0).strip()
@@ -260,6 +276,8 @@ def detect_sections(lines):
                 date_text = f"{date_text}-{end_year}"
                 rest = rest_range_match.group(3).strip()
             current_date = date_text
+            if carryover:
+                current_entry_lines.append(carryover)
             if rest:
                 current_entry_lines.append(rest)
             continue
