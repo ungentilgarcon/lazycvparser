@@ -314,11 +314,11 @@ def markdown_to_pdf(md_path, pdf_out):
     # Recherche d'une police DejaVu locale compatible
     font_candidates = [
         'DejaVuSans.ttf',
+        'DejaVuSans-Bold.ttf',
         'DejaVuSansCondensed.ttf',
         'DejaVuSansMono.ttf',
         'DejaVuSerif.ttf',
         'DejaVuSans-Oblique.ttf',
-        'DejaVuSans-Bold.ttf',
         'DejaVuSerif-Bold.ttf',
         'DejaVuSerifCondensed.ttf',
         'DejaVuSans-ExtraLight.ttf',
@@ -330,12 +330,20 @@ def markdown_to_pdf(md_path, pdf_out):
     cwd_fonts_dir = os.path.join(os.getcwd(), 'fonts')
 
     preferred_font = os.path.join(fonts_dir, 'DejaVuSans.ttf')
+    preferred_bold_font = os.path.join(fonts_dir, 'DejaVuSans-Bold.ttf')
     if os.path.exists(preferred_font):
         cwd_font = os.path.join(os.getcwd(), 'DejaVuSans.ttf')
         if not os.path.exists(cwd_font):
             with open(preferred_font, 'rb') as src, open(cwd_font, 'wb') as dst:
                 dst.write(src.read())
         font_path = cwd_font
+    bold_font_path = None
+    if os.path.exists(preferred_bold_font):
+        cwd_bold_font = os.path.join(os.getcwd(), 'DejaVuSans-Bold.ttf')
+        if not os.path.exists(cwd_bold_font):
+            with open(preferred_bold_font, 'rb') as src, open(cwd_bold_font, 'wb') as dst:
+                dst.write(src.read())
+        bold_font_path = cwd_bold_font
 
     if not font_path:
         candidate_paths = []
@@ -361,10 +369,116 @@ def markdown_to_pdf(md_path, pdf_out):
     if not font_path:
         raise RuntimeError('Aucune police DejaVu compatible trouvée dans le dossier.')
     pdf.add_font('DejaVu', '', font_path, uni=True)
+    if bold_font_path and os.path.exists(bold_font_path):
+        pdf.add_font('DejaVu', 'B', bold_font_path, uni=True)
     pdf.set_font('DejaVu', '', 12)
+    def normalize_text_for_pdf(text):
+        # Éviter les retours à la ligne entre mois et année (Février 2017)
+        months = r'(Janvier|Février|Mars|Avril|Mai|Juin|Juillet|Août|Septembre|Octobre|Novembre|Décembre|Janv|Fév|Fev|Mar|Avr|Juil|Aou|Sept|Oct|Nov|Déc|Dec)'
+        text = re.sub(rf'\b{months}\s+(19|20)\d{{2}}\b', lambda m: m.group(0).replace(' ', '\u00A0'), text)
+        return text
+
+    def get_cell_lines(text, width, line_height):
+        text = text.replace('<br>', '\n').replace('<br/>', '\n').replace('<br />', '\n')
+        text = normalize_text_for_pdf(text)
+        lines = []
+        for part in text.split('\n'):
+            part = part.strip()
+            if not part:
+                lines.append('')
+                continue
+            if hasattr(pdf, 'multi_cell'):
+                try:
+                    part_lines = pdf.multi_cell(width, line_height, part, split_only=True)
+                except TypeError:
+                    part_lines = [part]
+            else:
+                part_lines = [part]
+            lines.extend(part_lines)
+        return lines if lines else ['']
+
+    def draw_table_row(cells, col_widths, line_height=6, border=1, bold_cols=None):
+        wrapped_cells = []
+        max_lines = 1
+        for idx, cell in enumerate(cells):
+            segments = get_cell_lines(cell, col_widths[idx], line_height)
+            wrapped_cells.append(segments)
+            max_lines = max(max_lines, len(segments))
+
+        row_height = line_height * max_lines
+        if pdf.get_y() + row_height > pdf.h - pdf.b_margin:
+            pdf.add_page()
+        x_start = pdf.get_x()
+        y_start = pdf.get_y()
+        for idx, segments in enumerate(wrapped_cells):
+            pdf.set_xy(x_start, y_start)
+            if bold_cols and idx in bold_cols:
+                pdf.set_font('DejaVu', 'B', pdf.font_size_pt)
+            cell_text = "\n".join(segments)
+            pdf.multi_cell(col_widths[idx], line_height, cell_text, border=border)
+            if bold_cols and idx in bold_cols:
+                pdf.set_font('DejaVu', '', pdf.font_size_pt)
+            x_start += col_widths[idx]
+        pdf.set_xy(pdf.l_margin, y_start + row_height)
+
     with open(md_path, 'r', encoding='utf-8') as f:
-        for line in f:
-            pdf.multi_cell(0, 10, line.strip())
+        lines = [line.rstrip('\n') for line in f]
+
+    i = 0
+    page_width = pdf.w - pdf.l_margin - pdf.r_margin
+    while i < len(lines):
+        line = lines[i].strip()
+
+        # Titres Markdown
+        if line.startswith('# '):
+            pdf.set_font('DejaVu', 'B', 16)
+            pdf.multi_cell(0, 9, line[2:].strip())
+            pdf.set_font('DejaVu', '', 12)
+            i += 1
+            continue
+        if line.startswith('## '):
+            pdf.set_font('DejaVu', 'B', 13)
+            pdf.multi_cell(0, 8, line[3:].strip())
+            pdf.set_font('DejaVu', '', 12)
+            i += 1
+            continue
+
+        # Détection d'un tableau Markdown
+        if line.startswith('|') and i + 1 < len(lines) and lines[i + 1].strip().startswith('| ---'):
+            header = [c.strip() for c in line.strip('|').split('|')]
+            i += 2  # skip header and separator
+            col_count = max(1, len(header))
+            # Largeurs adaptées (table des périodes: 2 colonnes)
+            if col_count == 2 and header[0].lower().startswith('période'):
+                col_widths = [page_width * 0.28, page_width * 0.72]
+            else:
+                col_widths = [page_width / col_count] * col_count
+            # Ne pas rendre l'en-tête vide du tableau de contacts
+            if any(h.strip() for h in header):
+                draw_table_row(header, col_widths, line_height=6, border=1, bold_cols=set(range(col_count)))
+            while i < len(lines) and lines[i].strip().startswith('|'):
+                row = [c.strip() for c in lines[i].strip('|').split('|')]
+                # garantir même nombre de colonnes
+                if len(row) < col_count:
+                    row += [''] * (col_count - len(row))
+                # En-tête CV (table 2 colonnes sans bordures)
+                if col_count == 2 and (row[0].startswith('30 ') or 'rue' in row[0].lower() or 'Email' in row[1]):
+                    draw_table_row(row[:col_count], col_widths, line_height=6, border=0)
+                else:
+                    draw_table_row(row[:col_count], col_widths, line_height=6, border=1, bold_cols={0} if col_count == 2 else None)
+                i += 1
+            pdf.ln(2)
+            continue
+
+        # Texte standard
+        if line:
+            clean = line.replace('**', '').replace('__', '')
+            clean = clean.replace('<br>', '\n').replace('<br/>', '\n').replace('<br />', '\n')
+            clean = normalize_text_for_pdf(clean)
+            pdf.multi_cell(0, 8, clean)
+        else:
+            pdf.ln(2)
+        i += 1
     pdf.output(pdf_out)
 
 
