@@ -9,28 +9,54 @@ import sys
 import argparse
 
 def extract_lines(pdf_path):
+    def group_words_into_lines(words, y_tolerance=2.0):
+        lines = []
+        for word in sorted(words, key=lambda w: (w['top'], w['x0'])):
+            placed = False
+            for line in lines:
+                if abs(word['top'] - line['top']) <= y_tolerance:
+                    line['words'].append(word)
+                    placed = True
+                    break
+            if not placed:
+                lines.append({'top': word['top'], 'words': [word]})
+        return lines
+
+    def join_words(words):
+        words = sorted(words, key=lambda w: w['x0'])
+        text = ''
+        for i, w in enumerate(words):
+            if i == 0:
+                text = w['text']
+            else:
+                gap = w['x0'] - words[i - 1]['x1']
+                if gap <= 1.0:
+                    text += w['text']
+                else:
+                    text += ' ' + w['text']
+        # Nettoyer les espaces autour des ponctuations email
+        text = re.sub(r'\s+([@\.])\s+', r'\1', text)
+        text = re.sub(r'\s+([@\.])', r'\1', text)
+        text = re.sub(r'([@\.])\s+', r'\1', text)
+        return text.strip()
+
     all_lines = []
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages:
-            page_text = page.extract_text(x_tolerance=1.5, y_tolerance=2, layout=True)
-            if not page_text:
-                continue
-            for raw_line in page_text.split('\n'):
-                if not raw_line.strip():
+            words = page.extract_words(x_tolerance=1.0, y_tolerance=1.0, keep_blank_chars=False, use_text_flow=True)
+            if not words:
+                page_text = page.extract_text(x_tolerance=1.5, y_tolerance=2, layout=True)
+                if not page_text:
                     continue
-                # Séparer les colonnes si elles existent
-                col_match = re.match(r'^\s*(.+?)\s{2,}(\S.*)$', raw_line)
-                if col_match:
-                    left = col_match.group(1).strip()
-                    right = col_match.group(2).strip()
-                    if left and right:
-                        all_lines.append({'text': f"{left} {right}"})
-                    elif left:
-                        all_lines.append({'text': left})
-                    elif right:
-                        all_lines.append({'text': right})
-                else:
-                    all_lines.append({'text': raw_line.strip()})
+                for raw_line in page_text.split('\n'):
+                    if raw_line.strip():
+                        all_lines.append({'text': raw_line.strip()})
+                continue
+
+            for line in group_words_into_lines(words):
+                line_text = join_words(line['words'])
+                if line_text:
+                    all_lines.append({'text': line_text})
     return all_lines
 
 def detect_sections(lines):
@@ -76,7 +102,12 @@ def detect_sections(lines):
     months = r'(?:Janvier|Février|Mars|Avril|Mai|Juin|Juillet|Août|Septembre|Octobre|Novembre|Décembre|Janv|Fév|Fev|Mar|Avr|Juil|Aou|Août|Sept|Oct|Nov|Déc|Dec)'
     date_re_line = re.compile(
         rf'Depuis\s+\d{{4}}'
+        rf'|Depuis\s+{months}\s+\d{{4}}'
+        rf'|depuis\s+{months}\s+\d{{4}}'
+        rf'|courant\s+(19|20)\d{{2}}\s*(?:-|–|—|à)\s*(19|20)\d{{2}}'
+        rf'|\b(19|20)\d{{2}}\s*(?:-|–|—|à)\s*(19|20)\d{{2}}\b'
         rf'|\d{{1,2}}\s+au\s+\d{{1,2}}\s+{months}\s+\d{{4}}'
+        rf'|{months}\s+à\s+{months}\s+\d{{4}}'
         rf'|{months}\s+\d{{4}}\s+à\s+{months}\s+\d{{4}}'
         rf'|\d{{1,2}}\s+{months}\s+\d{{4}}'
         rf'|{months}\s+\d{{4}}'
@@ -107,7 +138,10 @@ def detect_sections(lines):
             body_lines.append(line)
 
     header_text = re.sub(r'\s+', ' ', ' '.join(header_lines)).strip()
+    header_text_compact = re.sub(r'\s+', '', ' '.join(header_lines))
     email_match = re.search(r'[\w\.\-]+@[\w\-]+\.[\w\.]+', header_text)
+    if not email_match:
+        email_match = re.search(r'[\w\.\-]+@[\w\-]+\.[\w\.]+', header_text_compact)
     phone_match = re.search(r'(?:\+?\d[\d\s]{8,}\d)', header_text)
     postal_match = re.search(r'\b\d{5}\b', header_text)
     age_match = re.search(r'\b\d{2}\s*ans\b', header_text, re.IGNORECASE)
@@ -116,15 +150,43 @@ def detect_sections(lines):
 
     md_lines.append(f"# {name}")
     md_lines.append('')
+
+    # Construire une en-tête en colonnes (adresse / nom / contacts)
+    cleaned_header_lines = []
+    for hline in header_lines:
+        line = hline.strip()
+        if not line:
+            continue
+        if email_match:
+            line = line.replace(email_match.group(0), '').strip()
+        if name and name in line:
+            line = line.replace(name, '').strip()
+        if phone_match:
+            line = line.replace(phone_match.group(0), '').strip()
+            line = re.sub(r'\b(?:Tel|Tél|Téléphone)\s*:?\s*', '', line, flags=re.IGNORECASE).strip()
+        if age_match:
+            line = line.replace(age_match.group(0), '').strip()
+        # Ne pas retirer le code postal de l'adresse (il sert à l'adresse)
+        line = re.sub(r'\s{2,}', ' ', line).strip(' ,;-')
+        if line:
+            cleaned_header_lines.append(line)
+
+    address_text = "<br>".join(cleaned_header_lines)
+    contact_lines = []
     if email_match:
-        md_lines.append(f"- Email : {email_match.group(0)}")
+        contact_lines.append(f"Email : {email_match.group(0)}")
     if phone_match:
-        md_lines.append(f"- Téléphone : {phone_match.group(0)}")
-    if postal_match:
-        md_lines.append(f"- Code postal : {postal_match.group(0)}")
+        contact_lines.append(f"Téléphone : {phone_match.group(0)}")
+    # Le code postal reste dans l'adresse pour un en-tête plus fidèle
     if age_match:
-        md_lines.append(f"- Âge : {age_match.group(0)}")
-    md_lines.append('')
+        contact_lines.append(f"Âge : {age_match.group(0)}")
+    contact_text = "<br>".join(contact_lines)
+
+    if address_text or contact_text:
+        md_lines.append("| | **" + name + "** | |")
+        md_lines.append("| --- | :---: | --- |")
+        md_lines.append(f"| {address_text} |  | {contact_text} |")
+        md_lines.append('')
 
     current_date = None
     current_entry_lines = []
@@ -140,7 +202,11 @@ def detect_sections(lines):
                 entry_text = ' '.join(current_entry_lines).strip()
                 entry_text = format_entry_text(entry_text)
                 if entry_text:
-                    entries.append((current_date, entry_text))
+                    if entries and entries[-1][0] == current_date:
+                        merged = f"{entries[-1][1]} {entry_text}".strip()
+                        entries[-1] = (current_date, merged)
+                    else:
+                        entries.append((current_date, entry_text))
             current_date = None
             current_entry_lines = []
 
@@ -165,6 +231,17 @@ def detect_sections(lines):
             md_lines.append(f"\n## {text.rstrip('.')}\n")
             continue
 
+        # Compléter une période scindée sur la ligne suivante (ex: "2015" puis "-2018 ...")
+        if current_date and not current_entry_lines:
+            split_range_match = re.match(r'^-\s*((19|20)\d{2})\b\s*(.*)$', text)
+            if split_range_match and re.match(r'^(19|20)\d{2}$', current_date):
+                end_year = split_range_match.group(1)
+                remainder = split_range_match.group(3).strip()
+                current_date = f"{current_date}-{end_year}"
+                if remainder:
+                    current_entry_lines.append(remainder)
+                continue
+
         # Date / période -> sous-titre
         date_match = date_re_line.match(text)
         if date_match:
@@ -172,6 +249,16 @@ def detect_sections(lines):
             flush_paragraph()
             date_text = date_match.group(0).strip()
             rest = text[len(date_text):].strip()
+            # Normaliser les périodes du type "2015 -2018"
+            range_inline = re.match(r'^(19|20)\d{2}\s*(?:-|–|—)\s*(19|20)\d{2}\b', date_text)
+            if range_inline:
+                date_text = re.sub(r'\s*(?:-|–|—)\s*', '-', date_text)
+            # Si la période est suivie immédiatement d'un "-YYYY" séparé
+            rest_range_match = re.match(r'^-\s*((19|20)\d{2})\b\s*(.*)$', rest)
+            if rest_range_match:
+                end_year = rest_range_match.group(1)
+                date_text = f"{date_text}-{end_year}"
+                rest = rest_range_match.group(3).strip()
             current_date = date_text
             if rest:
                 current_entry_lines.append(rest)
@@ -179,7 +266,10 @@ def detect_sections(lines):
 
         # Sinon, accumuler dans l'entrée courante ou paragraphe
         if current_date:
-            current_entry_lines.append(text)
+            if current_entry_lines and current_entry_lines[-1].endswith('-'):
+                current_entry_lines[-1] = current_entry_lines[-1][:-1] + text
+            else:
+                current_entry_lines.append(text)
         else:
             if buffer and buffer[-1].endswith('-'):
                 buffer[-1] = buffer[-1][:-1] + text
